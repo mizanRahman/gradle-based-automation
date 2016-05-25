@@ -1,0 +1,57 @@
+group 'automation'
+version '1.0'
+
+def repoDirName = "repositories"
+
+task executetask() {
+    def cmd = "cd src && ls -la"
+    print cmd.execute().getText()
+}
+
+task hello(type: Exec) {
+    executable "bash"
+    args "-c", "echo 'hello from your shell'"
+}
+
+def createDir(String directoryName) {
+    def folder = new File(directoryName)
+    if (!folder.exists()) {
+        folder.mkdirs()
+    }
+    return folder
+}
+
+task setup() {
+    def folder = createDir (repoDirName)
+}
+
+task cloneAllRepositories(
+        type: Exec,
+        dependsOn:[
+                "setup",
+                "cloneSpringDemo"
+        ]
+) {}
+
+task cloneSpringDemo(type: Exec) {
+    // workingDir folder
+
+    commandLine 'git', 'clone', 'https://github.com/mizanRahman/spring-demo.git'
+}
+
+task release(type: Exec) {
+    // update gradle properties file (version)
+    // git checkout develop
+    // git pull origin develop
+    // git push origin develop
+    // git tag with version
+    //
+}
+
+// passing params or switches with task
+task itest << {
+    if(project.hasProperty("dist")) {
+        println dist
+
+    }
+}

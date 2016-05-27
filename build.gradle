@@ -22,12 +22,12 @@ def createDir(String directoryName) {
 }
 
 task setup() {
-    def folder = createDir (repoDirName)
+    def folder = createDir(repoDirName)
 }
 
 task cloneAllRepositories(
         type: Exec,
-        dependsOn:[
+        dependsOn: [
                 "setup",
                 "cloneSpringDemo"
         ]
@@ -50,8 +50,36 @@ task release(type: Exec) {
 
 // passing params or switches with task
 task itest << {
-    if(project.hasProperty("dist")) {
+    if (project.hasProperty("dist")) {
         println dist
 
     }
+}
+
+task gorun(
+        type: Exec,
+        dependsOn: [
+                "setup"
+        ]
+) {
+
+
+    workingDir "${repoDirName}/spring-demo"
+    commandLine 'gradle', 'tasks'
+
+
+}
+
+task pwd(
+        dependsOn: [
+                "gorun"
+        ]
+) {
+
+    doLast {
+
+        def cmd = "pwd"
+        print cmd.execute().text
+    }
+
 }

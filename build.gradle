@@ -1,6 +1,9 @@
 group 'automation'
 version '1.0'
 
+apply from: 'git.gradle'
+
+
 def repoDirName = "repositories"
 
 task executetask() {
@@ -83,3 +86,96 @@ task pwd(
     }
 
 }
+
+task tes(type: GradleBuild) {
+    buildFile = 'repositories/spring-demo/build.gradle'
+    tasks = ['build']
+}
+
+
+class Test implements Plugin<Project> {
+
+    @Override
+    void apply(Project project) {
+
+
+    }
+}
+
+
+class GreetingPlugin implements Plugin<Project> {
+    class GreetingPluginConvention {
+        String message
+
+        def greet(Closure closure) {
+            closure.delegate = this
+            closure()
+        }
+    }
+
+    def void apply(Project project) {
+        project.convention.plugins.greeting = new GreetingPluginConvention()
+        project.task('say') << {
+            println project.convention.plugins.greeting.message
+        }
+    }
+}
+
+apply plugin: GreetingPlugin
+
+greet {
+    message = "hello world"
+}
+
+
+class BuildTask extends Exec {
+
+    private gitExecutable = "git"
+
+    void setCommand(String command) {
+
+        this.commandLine gitExecutable, command
+    }
+
+
+    void setWorkDir(String dir) {
+        this.workingDir = dir
+    }
+}
+
+task buildKpp(type: BuildTask) {
+    workDir = "repositories/spring-demo"
+    command = "status"
+}
+
+
+class Curl extends Exec {
+    private String curlExecutable = "curl"
+    String curlArgs = ""
+
+    public Curl() {
+        this.setExecutable(curlExecutable)
+    }
+
+    public void setArguments(String curlArguments) {
+        this.args = "$curlArguments"?.trim().split(' ') as List
+    }
+}
+
+task health(type:Curl) {
+    arguments = "google.com"
+}
+
+
+task gitStatus(type: Exec) {
+    executable "git"
+    args "status"
+}
+
+
+task pullFromOrigin(type: Exec) {
+
+    commandLine "git" ,"pull", "origin", "develop"
+}
+
+

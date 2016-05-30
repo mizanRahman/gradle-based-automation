@@ -133,8 +133,10 @@ class BuildTask extends Exec {
     private gitExecutable = "git"
 
     void setCommand(String command) {
+        def commandList =[gitExecutable]
+        commandList += "$command"?.trim().split(' ') as List
 
-        this.commandLine gitExecutable, command
+        this.commandLine commandList
     }
 
 
@@ -174,8 +176,32 @@ task gitStatus(type: Exec) {
 
 
 task pullFromOrigin(type: Exec) {
-
-    commandLine "git" ,"pull", "origin", "develop"
+    workingDir "repositories/spring-demo"
+    commandLine "git" ,"pull", "origin", "master"
 }
+
+
+task stash(type: BuildTask) {
+    workDir = "repositories/spring-demo"
+    command = "stash"
+}
+
+
+task pop(type: BuildTask) {
+    workDir = "repositories/spring-demo"
+    command = "stash pop"
+}
+
+
+
+task log(type: BuildTask) {
+    workDir = "repositories/spring-demo"
+    command = "log --oneline"
+}
+
+task log2(type: BuildTask) {
+    command = "log --oneline"
+}
+
 
 
